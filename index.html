@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>John Kopanski — Director / Editor / Producer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --teal: #4ecdc4;
+      --white: #f0ede8;
+      --dark: #080808;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--dark);
+      color: var(--white);
+      font-family: 'Montserrat', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── FIXED HEADER ── */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 28px;
+      pointer-events: none;
+      /* subtle gradient so header is readable over video */
+      background: linear-gradient(to bottom, rgba(8,8,8,0.7) 0%, transparent 100%);
+    }
+
+    .kvp-logo {
+      pointer-events: auto;
+    }
+
+    /* Real logo image — needs transparent bg version for best results.
+       Using mix-blend-mode: screen so the white bg fades on dark backgrounds. */
+    .kvp-logo img {
+      height: 38px;
+      width: auto;
+      display: block;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.9));
+      /* On dark backgrounds, screen blend makes white bg near-invisible */
+      mix-blend-mode: screen;
+    }
+
+    .header-name {
+      pointer-events: auto;
+      text-align: right;
+    }
+
+    .header-name a {
+      display: block;
+      text-decoration: none;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      color: var(--white);
+      text-transform: uppercase;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.9);
+      transition: color 0.2s;
+    }
+
+    .header-name a:hover { color: var(--teal); }
+
+    .header-name .subtitle {
+      font-size: 0.52rem;
+      font-weight: 300;
+      letter-spacing: 0.22em;
+      color: rgba(240,237,232,0.5);
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+
+    /* ── INTRO PANEL ── */
+    .intro-panel {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      background: var(--dark);
+    }
+
+    .intro-panel::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(78,205,196,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .intro-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.8rem, 8vw, 7rem);
+      font-weight: 300;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--white);
+      text-align: center;
+      line-height: 1;
+      animation: fadeUp 1.2s ease forwards;
+      opacity: 0;
+    }
+
+    .intro-rule {
+      width: 60px;
+      height: 1px;
+      background: var(--teal);
+      margin: 22px auto;
+      animation: fadeUp 1.2s ease 0.2s forwards;
+      opacity: 0;
+    }
+
+    .intro-title {
+      font-size: clamp(0.55rem, 1.5vw, 0.72rem);
+      font-weight: 400;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(240,237,232,0.5);
+      text-align: center;
+      animation: fadeUp 1.2s ease 0.4s forwards;
+      opacity: 0;
+    }
+
+    .tap-prompt {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      animation: fadeUp 1.2s ease 0.9s forwards;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    .tap-prompt.hidden { opacity: 0 !important; pointer-events: none; }
+
+    .tap-prompt span {
+      font-size: 0.48rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(240,237,232,0.35);
+      white-space: nowrap;
+    }
+
+    .tap-circle {
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(78,205,196,0.5);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: ripple 2s ease infinite;
+    }
+
+    .tap-circle::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--teal);
+      border-radius: 50%;
+    }
+
+    @keyframes ripple {
+      0%   { box-shadow: 0 0 0 0 rgba(78,205,196,0.35); }
+      70%  { box-shadow: 0 0 0 14px rgba(78,205,196,0); }
+      100% { box-shadow: 0 0 0 0 rgba(78,205,196,0); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── VIDEO PANELS ── */
+    .video-panel {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      background: var(--dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 0;
+    }
+
+    /* Subtle teal glow behind active video */
+    .video-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(78,205,196,0.04) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.8s ease;
+      pointer-events: none;
+    }
+
+    .video-panel.active::before {
+      opacity: 1;
+    }
+
+    /* Thin teal left-border accent on active panel */
+    .video-panel::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%) scaleY(0);
+      width: 2px;
+      height: 60%;
+      background: linear-gradient(to bottom, transparent, var(--teal), transparent);
+      transition: transform 0.6s ease;
+    }
+
+    .video-panel.active::after {
+      transform: translateY(-50%) scaleY(1);
+    }
+
+    .video-wrap {
+      width: 85vw;
+      max-width: 1100px;
+      aspect-ratio: 16 / 9;
+      position: relative;
+      /* Scroll reveal: start scaled down and faded */
+      opacity: 0;
+      transform: scale(0.92) translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+      /* Subtle shadow/glow */
+      box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(78,205,196,0.08);
+    }
+
+    .video-panel.active .video-wrap {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+
+    .video-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      pointer-events: none;
+    }
+
+    /* Counter — bottom right of each panel */
+    .counter {
+      position: absolute;
+      bottom: 28px;
+      right: 32px;
+      font-size: 0.5rem;
+      letter-spacing: 0.25em;
+      color: rgba(240,237,232,0.2);
+      font-variant-numeric: tabular-nums;
+      transition: color 0.4s;
+    }
+
+    .video-panel.active .counter {
+      color: rgba(78,205,196,0.5);
+    }
+
+    /* ── CONTACT PANEL ── */
+    .contact-panel {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      background: var(--dark);
+      position: relative;
+    }
+
+    .contact-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(78,205,196,0.03) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .contact-label {
+      font-size: 0.52rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(240,237,232,0.3);
+      margin-bottom: 8px;
+    }
+
+    .contact-email {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.1rem, 4vw, 2.2rem);
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      color: var(--teal);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .contact-email:hover { color: var(--white); }
+
+    .contact-rule {
+      width: 40px;
+      height: 1px;
+      background: rgba(78,205,196,0.3);
+      margin: 18px 0;
+    }
+
+    .contact-tagline {
+      font-size: 0.5rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: rgba(240,237,232,0.2);
+    }
+
+    /* ── PROGRESS BAR ── */
+    #progress {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 2px;
+      height: 0%;
+      background: var(--teal);
+      z-index: 200;
+      transition: height 0.1s linear;
+      opacity: 0.6;
+    }
+
+    ::-webkit-scrollbar { width: 0; }
+  </style>
+</head>
+<body>
+
+  <!-- Progress bar -->
+  <div id="progress"></div>
+
+  <header>
+    <div class="kvp-logo">
+      <img src="kvp-logo.png" alt="KVP" />
+    </div>
+    <div class="header-name">
+      <a href="#contact">John Kopanski</a>
+      <div class="subtitle">Director &nbsp;/&nbsp; Editor &nbsp;/&nbsp; Producer</div>
+    </div>
+  </header>
+
+  <section class="intro-panel" id="intro">
+    <div class="intro-name">John Kopanski</div>
+    <div class="intro-rule"></div>
+    <div class="intro-title">Director &nbsp;&nbsp;/&nbsp;&nbsp; Editor &nbsp;&nbsp;/&nbsp;&nbsp; Producer</div>
+    <div class="tap-prompt" id="tapPrompt">
+      <div class="tap-circle"></div>
+      <span>Scroll to watch</span>
+    </div>
+  </section>
+
+  <!-- 11 VIDEO PANELS -->
+  <div class="video-panel" data-index="0">
+    <div class="video-wrap">
+      <iframe id="p0" src="https://www.youtube.com/embed/B7XgOXTtwFs?enablejsapi=1&mute=1&controls=0&loop=1&playlist=B7XgOXTtwFs&rel=0&modestbranding=1&playsinline=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+    <div class="counter">01 / 11</div>
+  </div>
+
+  <div class="video-panel" data-index="1">
+    <div class="video-wrap">
+      <iframe id="p1" src="https://www.youtube.com/embed/yo3cBKrF5Gw?enablejsapi=1&mute=1&controls=0&loop=1&playlist=yo3cBKrF5Gw&rel=0&modestbranding=1&playsinline=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+    <div class="counter">02 / 11</div>
+  </div>
+
+  <div class="video-panel" data-index="2">
+    <div class="video-wrap">
+      <iframe id="p2" src="https://www.youtube.com/embed/7JALDxTCyJM?enablejsapi=1&mute=1&controls=0&loop=1&playlist=7JALDxTCyJM&rel=0&modestbranding=1&playsinline=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+    <div class="counter">03 / 11</div>
+  </div>
+
+  <div class="video-panel" data-index="3">
+    <div class="video-wrap">
+      <iframe id="p3" src="https://www.youtube.com/embed/1uEGMQex4cA?enablejsapi=1&mute=1&controls=0&loop=1&playlist=1uEGMQex4cA&rel=0&modestbranding=1&playsinline=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+    <div class="counter">04 / 11</div>
+  </div>
+
+  <div class="video-panel" data-index="4">
+    <div class="video-wrap">
+      <iframe id="p4" src="https://www.youtube.com/embed/24Q5V1TDoVU?enablejsapi=1&mute=1&controls=0&loop=1&playlist=24Q5V1TDoVU&rel=0&modestbranding=1&playsinline=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+    <div class="counter">05 / 11</div>
+  </div>
+
+  <div class="video-panel" data-index="5">
+    <div class="video-wrap">
+      <iframe id="p5" src="https://www.youtube.com/embed/fHgblkOd0s4?enablejsapi=1&mute=1&controls=0&loop=1&playlist=fHgblkOd0s4&rel=0&modestbranding=1&playsinline=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+    <div class="counter">06 / 11</div>
+  </div>
+
+  <div class="video-panel" data-index="6">
+    <div class="video-wrap">
+      <iframe id="p6" src="https://www.youtube.com/embed/HNJdf3813k8?enablejsapi=1&mute=1&controls=0&loop=1&playlist=HNJdf3813k8&rel=0&modestbranding=1&playsinline=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+    <div class="counter">07 / 11</div>
+  </div>
+
+  <div class="video-panel" data-index="7">
+    <div class="video-wrap">
+      <iframe id="p7" src="https://www.youtube.com/embed/ha9NifLkLaY?enablejsapi=1&mute=1&controls=0&loop=1&playlist=ha9NifLkLaY&rel=0&modestbranding=1&playsinline=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+    <div class="counter">08 / 11</div>
+  </div>
+
+  <div class="video-panel" data-index="8">
+    <div class="video-wrap">
+      <iframe id="p8" src="https://www.youtube.com/embed/cKdpz5cwEnQ?enablejsapi=1&mute=1&controls=0&loop=1&playlist=cKdpz5cwEnQ&rel=0&modestbranding=1&playsinline=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+    <div class="counter">09 / 11</div>
+  </div>
+
+  <div class="video-panel" data-index="9">
+    <div class="video-wrap">
+      <iframe id="p9" src="https://www.youtube.com/embed/3EL1W6q6Zfg?enablejsapi=1&mute=1&controls=0&loop=1&playlist=3EL1W6q6Zfg&rel=0&modestbranding=1&playsinline=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+    <div class="counter">10 / 11</div>
+  </div>
+
+  <div class="video-panel" data-index="10">
+    <div class="video-wrap">
+      <iframe id="p10" src="https://www.youtube.com/embed/Rpmd-x0sneo?enablejsapi=1&mute=1&controls=0&loop=1&playlist=Rpmd-x0sneo&rel=0&modestbranding=1&playsinline=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+    <div class="counter">11 / 11</div>
+  </div>
+
+  <section class="contact-panel" id="contact">
+    <div class="contact-label">Get in touch</div>
+    <a class="contact-email" href="mailto:kayvideoproductions@gmail.com">kayvideoproductions@gmail.com</a>
+    <div class="contact-rule"></div>
+    <div class="contact-tagline">Chicago &nbsp;·&nbsp; Available Worldwide</div>
+  </section>
+
+  <script>
+    // YouTube API
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+
+    var players = [];
+    var readyFlags = {};
+    var unlocked = false;
+    var totalPlayers = 11;
+
+    function onYouTubeIframeAPIReady() {
+      for (var i = 0; i < totalPlayers; i++) {
+        (function(idx) {
+          players[idx] = new YT.Player('p' + idx, {
+            events: {
+              onReady: function(e) {
+                readyFlags[idx] = true;
+                e.target.mute();
+              }
+            }
+          });
+        })(i);
+      }
+    }
+
+    // Unlock on first interaction
+    function unlock() {
+      if (unlocked) return;
+      unlocked = true;
+      document.getElementById('tapPrompt').classList.add('hidden');
+    }
+
+    document.addEventListener('scroll', unlock, { once: true });
+    document.addEventListener('click', unlock, { once: true });
+    document.addEventListener('touchstart', unlock, { once: true });
+
+    // Intersection Observer for scroll reveal + autoplay
+    var panels = document.querySelectorAll('.video-panel');
+
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        var panel = entry.target;
+        var idx = parseInt(panel.dataset.index);
+
+        if (entry.isIntersecting) {
+          panel.classList.add('active');
+          if (unlocked && readyFlags[idx]) {
+            try { players[idx].playVideo(); } catch(e) {}
+          }
+        } else {
+          panel.classList.remove('active');
+          if (readyFlags[idx]) {
+            try { players[idx].pauseVideo(); } catch(e) {}
+          }
+        }
+      });
+    }, { threshold: 0.35 });
+
+    panels.forEach(function(p) { observer.observe(p); });
+
+    // Progress bar
+    window.addEventListener('scroll', function() {
+      var scrolled = window.scrollY;
+      var total = document.body.scrollHeight - window.innerHeight;
+      var pct = (scrolled / total) * 100;
+      document.getElementById('progress').style.height = pct + '%';
+    });
+  </script>
+</body>
+</html>
